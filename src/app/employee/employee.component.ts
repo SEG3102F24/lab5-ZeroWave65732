@@ -1,20 +1,24 @@
-import {Component, inject} from '@angular/core';
-import { AbstractControl, FormBuilder, Validators, ReactiveFormsModule } from "@angular/forms";
+import {Component, EventEmitter, inject, Output} from '@angular/core';
+import {AbstractControl, FormBuilder, Validators, ReactiveFormsModule, FormsModule} from "@angular/forms";
 import {EmployeeService} from "../service/employee.service";
 import { Router, RouterLink } from "@angular/router";
 import {Employee} from "../model/employee";
+import {NgStyle} from "@angular/common";
+import {EmployeeDbService} from "../model/firestore/employee-db.service";
 
 @Component({
     selector: 'app-employee',
     templateUrl: './employee.component.html',
     styleUrls: ['./employee.component.css'],
     standalone: true,
-    imports: [RouterLink, ReactiveFormsModule]
+  imports: [RouterLink, ReactiveFormsModule, NgStyle, FormsModule]
 })
 export class EmployeeComponent {
+  @Output() fireSave: EventEmitter<Employee>= new EventEmitter();
   private builder: FormBuilder = inject(FormBuilder);
   private employeeService: EmployeeService = inject(EmployeeService);
   private router: Router = inject(Router);
+  private employeeDbService = new EmployeeDbService();
   employeeForm = this.builder.group({
     name: ['', Validators.required],
     dateOfBirth: ['', Validators.required],
@@ -39,6 +43,8 @@ export class EmployeeComponent {
       this.gender.value,
       this.email.value);
     this.employeeService.addEmployee(employee);
+    this.employeeDbService.createEmployee(employee).then(() => {});
+    this.fireSave.emit(employee);
     this.employeeForm.reset();
     this.router.navigate(['/employees']).then(() => {});
   }

@@ -1,4 +1,7 @@
 <a class="btn btn-primary" [routerLink]="['/employee']">Add Employee</a>
+<div class="col-md-8" [ngStyle]="msgStyle" [hidden]="hideMsg">
+  {{message}}
+</div>
 <div class="container">
   <table class="table">
     <thead>
@@ -12,7 +15,7 @@
     </tr>
     </thead>
     <tbody>
-    <tr *ngFor="let emp of employees.$ | async">
+    <tr *ngFor="let emp of employees">
       <td>{{emp.name}}</td>
       <td>{{emp.dateOfBirth | date :'d/MMM/y'}}</td>
       <td>{{emp.city}}</td>
